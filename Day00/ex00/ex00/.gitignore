@@ -52,3 +52,4 @@ android
 /windows/
 /test/
 widget_test.dart
+#devtools_options.yaml
