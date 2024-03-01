@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MaterialApp(
-    title: 'Ex02',
+    title: 'calculator_proj',
     home: MyApp(),
   ));
 }
