@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -35,11 +37,29 @@ class BodyWidget extends StatefulWidget {
 
 class _BodyWidget extends State<BodyWidget> {
   String lastkey = '';
+  List<String> elems = [];
 
   void _showKey(String text) {
     setState(() {
+      if (text == 'AC') {
+        elems.clear();
+        // return ;
+      } else if (text == 'C') {
+        if (elems.length > 0) {
+          elems.removeLast();
+        }
+      } else if (text == '=') {
+        // perform calcs here
+      } else {
+        elems.add(text);
+      }
       print('button press :$text');
+      print('list=$elems');
     });
+  }
+
+  double computeNumber() {
+    return (0.0);
   }
 
   @override
