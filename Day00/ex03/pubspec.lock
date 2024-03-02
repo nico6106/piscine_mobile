@@ -62,6 +62,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
+  flutter_math_operations:
+    dependency: "direct main"
+    description:
+      name: flutter_math_operations
+      sha256: ec779ede78bac279407136417a3c61f804e186a4cbfd0703299cbd27688ae02b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -202,3 +210,4 @@ packages:
     version: "13.0.0"
 sdks:
   dart: ">=3.3.0 <4.0.0"
+  flutter: ">=1.17.0"
