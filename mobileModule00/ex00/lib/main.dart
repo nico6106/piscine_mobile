@@ -9,9 +9,10 @@ class MyAppMat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Ex00',
-      home: MyApp(),
+      home: const MyApp(),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
     );
   }
 }
@@ -21,34 +22,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Colors.brown,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: (const Text(
-              'A simple text',
-              style: TextStyle(
-                color: Colors.white,
-                decoration: TextDecoration.none,
-                fontSize: 32,
-                fontWeight: FontWeight.normal,
+    return Scaffold(
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.brown,
+                borderRadius: BorderRadius.circular(10),
               ),
-            )),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              print('Button pressed');
-            },
-            child: const Text('Press me'),
-          )
-        ],
+              child: (const Text(
+                'A simple text',
+                style: TextStyle(
+                  color: Colors.white,
+                  decoration: TextDecoration.none,
+                  fontSize: 32,
+                  fontWeight: FontWeight.normal,
+                ),
+              )),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                print('Button pressed');
+              },
+              child: const Text('Press me'),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -42,7 +42,7 @@ class _BodyWidget extends State<BodyWidget> {
 
   void _showKey(String text) {
     setState(() {
-      print('button press :$text');
+      // print('button press :$text');
       if (text == 'AC') {
         elems.clear();
         calculs = '0';
@@ -182,7 +182,7 @@ class _BodyWidget extends State<BodyWidget> {
     // first run: identity priority operations (* and /)
     for (int i = 0; i < exp.length; i++) {
       elem = exp[i];
-      print('firstrun: elem=$elem, exp=$exp');
+      // print('firstrun: elem=$elem, exp=$exp');
       if (elem is String && elem == '*') {
         calc = exp[i - 1] * exp[i + 1];
         exp[i - 1] = calc;
@@ -200,7 +200,7 @@ class _BodyWidget extends State<BodyWidget> {
         i--;
       }
     }
-    print('END firstrun: exp=$exp');
+    // print('END firstrun: exp=$exp');
 
     // second run: compute all calcs
     if (exp.length == 1) {

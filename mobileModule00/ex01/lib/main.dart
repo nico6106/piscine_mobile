@@ -9,9 +9,10 @@ class MyAppMat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Ex01',
-      home: MyApp(),
+      home: const MyApp(),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
     );
   }
 }
@@ -38,19 +39,21 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          MainTextWidget(show: text),
-          ElevatedButton(
-            onPressed: () {
-              _amendText();
-            },
-            child: const Text('Press me'),
-          )
-        ],
+    return Scaffold(
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            MainTextWidget(show: text),
+            ElevatedButton(
+              onPressed: () {
+                _amendText();
+              },
+              child: const Text('Press me'),
+            )
+          ],
+        ),
       ),
     );
   }

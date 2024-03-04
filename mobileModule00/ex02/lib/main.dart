@@ -100,10 +100,12 @@ class ShowButtonsWidget extends StatelessWidget {
               },
               child: Text(text[i],
                   style: TextStyle(
-                      color: (colors[i] == 'grey'
-                          ? const Color.fromARGB(255, 36, 52, 59)
-                          : (colors[i] == 'white' ? Colors.white : Colors.red)),
-                      fontWeight: FontWeight.bold),
+                    color: (colors[i] == 'grey'
+                        ? const Color.fromARGB(255, 36, 52, 59)
+                        : (colors[i] == 'white' ? Colors.white : Colors.red)),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
                   textAlign: TextAlign.center),
             ),
           ),
@@ -120,7 +122,8 @@ class ShowResultsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromARGB(255, 36, 52, 59),
+      color: const Color.fromARGB(255, 36, 52, 59),
+      constraints: const BoxConstraints(minHeight: 80),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
