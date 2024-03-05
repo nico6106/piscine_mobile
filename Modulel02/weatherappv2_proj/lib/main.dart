@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+// import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(const MainApp());
@@ -30,12 +31,27 @@ class _MainApp extends State<MainApp> {
       } else if (choice == 'gps') {
         _choice = 2;
         local = 'Geolocation';
+
+        // trying to get localisation
+        // _getCurrentLocation();
+        // Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        // print('position = $position');
       } else {
         _choice = 0;
         local = '';
       }
     });
   }
+
+  // Future<void> _getCurrentLocation() async {
+  //   try {
+  //     Position position = await Geolocator.getCurrentPosition(
+  //         desiredAccuracy: LocationAccuracy.high);
+  //     print('position = $position');
+  //   } catch (e) {
+  //     print('Error getting current location: $e');
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -75,6 +91,7 @@ class MyTabWidget extends StatelessWidget {
 
   final String title;
   final String localisation;
+  // final TextEditingController myController;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(

@@ -24,6 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.weatherappv2_proj"
+	compileSdkVersion 33
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -64,4 +65,18 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+	// implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
+
+	// implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    // constraints {
+    //     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version") {
+    //         because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib and to not fail builds due duplicate classes")
+    //     }
+    //     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version") {
+    //         because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib and to not fail builds due duplicate classes")
+    //     }
+    // }
+
+
+}
