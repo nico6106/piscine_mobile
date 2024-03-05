@@ -75,23 +75,45 @@ class MyTabWidget extends StatelessWidget {
 
   final String title;
   final String localisation;
-  // final TextEditingController myController;
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        if (constraints.minHeight > 40) {
+          return ShowResultsWidget(title: title, localisation: localisation);
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+}
+
+class ShowResultsWidget extends StatelessWidget {
+  const ShowResultsWidget({
+    super.key,
+    required this.title,
+    required this.localisation,
+  });
+
+  final String title;
+  final String localisation;
+
   @override
   Widget build(BuildContext context) {
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text(
-            localisation,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
-      
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(
+          localisation,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
     );
   }
 }
