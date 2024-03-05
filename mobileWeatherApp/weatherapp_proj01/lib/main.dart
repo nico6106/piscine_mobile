@@ -78,9 +78,9 @@ class MyTabWidget extends StatelessWidget {
   // final TextEditingController myController;
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             title,
@@ -91,7 +91,7 @@ class MyTabWidget extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
-      ),
+      
     );
   }
 }
