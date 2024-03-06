@@ -4,6 +4,13 @@ import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
+import 'dart:async';
+import 'dart:convert';
+
+// files
+import 'app_bar.dart';
+import 'bottom_bar.dart';
+
 void main() {
   runApp(const MainApp());
 }
@@ -21,6 +28,8 @@ class _MainApp extends State<MainApp> {
   int _choice = 0;
   bool _error = false;
   bool _showSearch = false;
+
+  late Future<GeoData> futureGeoData;
 
   void setCity(String city) {
     setState(() {
@@ -40,18 +49,26 @@ class _MainApp extends State<MainApp> {
         _choice = 1;
         _error = false;
         print('choice set');
+        if (myController.text.isEmpty) {
+          _showSearch = false;
+        } else {
+          _showSearch = true;
+        }
         if (myController.text.length > 2) {
-          ;
+          futureGeoData = fetchGeocoding(myController.text);
+          print('after geodata');
+          print(futureGeoData);
         }
       } else if (choice == 'gps') {
         _choice = 2;
-        // local = 'Geolocation';
+        _showSearch = false;
 
         // trying to get localisation
         _getCurrentLocation();
       } else {
         _choice = 0;
         local = '';
+        _showSearch = false;
         _error = false;
       }
     });
@@ -103,12 +120,20 @@ class _MainApp extends State<MainApp> {
               setShowSearch: setShowSearch,
             ),
           ),
-          body: TabBarView(children: [
-            MyTabWidget(
-                title: 'Currently', localisation: local, isError: _error),
-            MyTabWidget(title: 'Today', localisation: local, isError: _error),
-            MyTabWidget(title: 'Weekly', localisation: local, isError: _error),
-          ]),
+          body: _showSearch
+              ? const SearchBarResults()
+              : TabBarView(
+                  children: [
+                    MyTabWidget(
+                        title: 'Currently',
+                        localisation: local,
+                        isError: _error),
+                    MyTabWidget(
+                        title: 'Today', localisation: local, isError: _error),
+                    MyTabWidget(
+                        title: 'Weekly', localisation: local, isError: _error),
+                  ],
+                ),
           bottomNavigationBar: const MyBottonBarWidget(),
         ),
       ),
@@ -181,131 +206,4 @@ class ShowResultsWidget extends StatelessWidget {
       ],
     );
   }
-}
-
-class MyBottonBarWidget extends StatelessWidget {
-  const MyBottonBarWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      child: BottomAppBar(
-        child: TabBar(tabs: [
-          Tab(
-            icon: Icon(
-              Icons.watch,
-              semanticLabel: 'Currently',
-            ),
-            text: 'Currently',
-          ),
-          Tab(
-            icon: Icon(
-              Icons.today,
-              semanticLabel: 'Today',
-            ),
-            text: 'Today',
-          ),
-          Tab(
-            icon: Icon(
-              Icons.calendar_month,
-              semanticLabel: 'Weekly',
-            ),
-            text: 'Weekly',
-          ),
-        ]),
-      ),
-    );
-  }
-}
-
-class MyAppBar extends StatelessWidget {
-  const MyAppBar(
-      {super.key,
-      required this.myController,
-      required this.setCity,
-      required this.setChoice,
-      required this.setShowSearch});
-
-  final TextEditingController myController;
-  final Function(String) setCity;
-  final Function(String) setChoice;
-  final Function(bool) setShowSearch;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: SearchBarWidget(
-              myController: myController,
-              setCity: setCity,
-              setChoice: setChoice,
-              setShowSearch: setShowSearch,
-            ),
-          ),
-          GestureDetector(
-            onTap: () => {setChoice('gps')},
-            child: const Icon(
-              Icons.near_me,
-              semanticLabel: 'Near me',
-              size: 40.0,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({
-    super.key,
-    required this.myController,
-    required this.setCity,
-    required this.setChoice,
-    required this.setShowSearch,
-  });
-
-  final TextEditingController myController;
-  final Function(String p1) setCity;
-  final Function(String p1) setChoice;
-  final Function(bool) setShowSearch;
-
-  // void _callAPI(String value) async {
-  //   String searchText = '';
-  //   searchText = myController.text;
-  //   print('searched for = $searchText');
-
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: myController,
-      onChanged: (value) {
-        setCity(value);
-        // _callAPI(value);
-        setChoice('city');
-        setShowSearch(true);
-      },
-      decoration: const InputDecoration(
-          // border: OutlineInputBorder(),
-          hintText: 'Localisation',
-          prefixIcon: Icon(Icons.search)),
-    );
-  }
-
-  // Widget buildSuggestions(BuildContext context) {
-  //   List<String> suggestions = ['Brazil', 'Paris', 'France', 'Montélimar'];
-
-  //   return ListView.builder(itemCount: suggestions.length,itemBuilder:
-  //   (context, index) {
-  //     final suggestion = suggestions[index];
-  //     return ListTile();
-  //   },);
-  // }
 }
