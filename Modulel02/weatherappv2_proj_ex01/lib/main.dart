@@ -25,7 +25,6 @@ class MainApp extends StatefulWidget {
 class _MainApp extends State<MainApp> {
   final myController = TextEditingController();
   String local = '';
-  int _choice = 0;
   bool _error = false;
   bool _showSearch = false;
 
@@ -43,40 +42,61 @@ class _MainApp extends State<MainApp> {
     });
   }
 
-  void setChoice(String choice) async {
+  void setError() {
     setState(() {
-      if (choice == 'city') {
-        _choice = 1;
+      _showSearch = false;
+    });
+  }
+
+  void setChoice(String choice) async {
+    // setState(() {
+    if (choice == 'city') {
+      setState(() {
         _error = false;
-        print('choice set');
-        if (myController.text.isEmpty) {
+      });
+
+      if (myController.text.isEmpty) {
+        setState(() {
           _showSearch = false;
-        } else {
-          _showSearch = true;
-        }
-        if (myController.text.length > 2) {
-          try {
-            futureGeoData = fetchGeocoding(myController.text);
-          } catch (e) {
-            print('Error to get futureGeoData from fetchGeocoding');
+        });
+      }
+      if (myController.text.length > 2) {
+        try {
+          futureGeoData = fetchGeocoding(myController.text);
+          if (futureGeoData is Exception) {
+            setState(() {
+              print('Error to get futureGeoData from fetchGeocoding');
+              _showSearch = false;
+            });
+          } else {
+            setState(() {
+              _showSearch = true;
+            });
           }
-
-          print('after geodata');
-          print(futureGeoData);
+          setState(() {
+            _showSearch = true;
+          });
+        } catch (e) {
+          print('Error to get futureGeoData from fetchGeocoding');
+          setState(() {
+            _showSearch = false;
+          });
         }
-      } else if (choice == 'gps') {
-        _choice = 2;
+      }
+    } else if (choice == 'gps') {
+      setState(() {
         _showSearch = false;
-
-        // trying to get localisation
-        _getCurrentLocation();
-      } else {
-        _choice = 0;
+      });
+      // trying to get localisation
+      _getCurrentLocation();
+    } else {
+      setState(() {
         local = '';
         _showSearch = false;
         _error = false;
-      }
-    });
+      });
+    }
+    // });
   }
 
   Future<Position?> _getCurrentLocation() async {
@@ -126,7 +146,23 @@ class _MainApp extends State<MainApp> {
             ),
           ),
           body: _showSearch
-              ? const SearchBarResults()
+              ? FutureBuilder<List<GeoData>>(
+                  future: futureGeoData,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return SearchBarResults(data: snapshot.data!);
+                    } else if (snapshot.hasError) {
+                      // setError();
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setError(); // Modifier l'état en dehors du build
+                      });
+
+                      return Text('${snapshot.error}');
+                    }
+
+                    // By default, show a loading spinner.
+                    return const CircularProgressIndicator();
+                  })
               : TabBarView(
                   children: [
                     MyTabWidget(

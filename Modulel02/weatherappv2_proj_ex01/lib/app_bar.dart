@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -54,39 +51,45 @@ class MyAppBar extends StatelessWidget {
 class SearchBarResults extends StatelessWidget {
   const SearchBarResults({
     super.key,
+    required this.data,
   });
+
+  final List<GeoData> data;
 
   @override
   Widget build(BuildContext context) {
-    List<String> suggestions = ['Brazil', 'Paris', 'France', 'Montélimar'];
-
     return ListView.builder(
-      itemCount: suggestions.length,
+      itemCount: data.length,
       itemBuilder: (context, index) {
-        final suggestion = suggestions[index];
-        return ListTile(title: Text(suggestion));
+        final suggestion = data[index];
+        return ListTile(
+          title: Row(
+            children: [
+              Text(
+                suggestion.city,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text(', '),
+              if (suggestion.admin1 != null) ...[
+                Text(suggestion.admin1!),
+                const Text(', '),
+              ],
+              Text(suggestion.country)
+            ],
+          ),
+        );
       },
     );
   }
-
-  // Widget buildSuggestions(BuildContext context) {
-  //   List<String> suggestions = ['Brazil', 'Paris', 'France', 'Montélimar'];
-
-  //   return ListView.builder(itemCount: suggestions.length,itemBuilder:
-  //   (context, index) {
-  //     final suggestion = suggestions[index];
-  //     return ListTile();
-  //   },);
-  // }
 }
 
 class GeoData {
   final int id;
   final String city;
-  final String latitude;
-  final String longitude;
+  final double latitude;
+  final double longitude;
   final String country;
-  final String block;
+  final String? admin1;
 
   const GeoData({
     required this.id,
@@ -94,85 +97,42 @@ class GeoData {
     required this.latitude,
     required this.longitude,
     required this.country,
-    required this.block,
+    this.admin1,
   });
 
   factory GeoData.fromJson(Map<String, dynamic> json) {
-    // Map<String, dynamic> results = json['results'];
-    print('json: $json');
-    print(json['name']);
-    print(json['latitude']);
-    print(json['longitude']);
-    print(json['country']);
-    print(json['admin1']);
-
-    // List<dynamic> results = json['results'] as List<dynamic>;
-    // Map<String, dynamic> firstResult = results.first;
-
-    // return GeoData(
-    //   id: firstResult["id"] as int,
-    //   city: firstResult["city"] as String,
-    //   latitude: firstResult["latitude"] as String,
-    //   longitude: firstResult["longitude"] as String,
-    //   country: firstResult["country"] as String,
-    //   block: firstResult["block"] as String,
-    // );
-
-    return switch (json) {
-      {
-        'name': String city,
-        'id': int id,
-        'latitude': String latitude,
-        'longitude': String longitude,
-        'country': String country,
-        'admin1': String block,
-      } =>
-        GeoData(
-          id: id,
-          city: city,
-          latitude: latitude,
-          longitude: longitude,
-          country: country,
-          block: block,
-        ),
-      _ => throw const FormatException('Failed to load album.'),
-    };
+    return GeoData(
+      id: json['id'] as int,
+      city: json['name'] as String,
+      latitude: json['latitude'] as double,
+      longitude: json['longitude'] as double,
+      country: json['country'] as String,
+      admin1: json['admin1'] as String?,
+    );
   }
 }
 
 List<GeoData> parseGeocoding(dynamic responseBody) {
   List responseResults = responseBody['results'];
-
   List<GeoData> allResults = [];
   GeoData tmp;
-  print('start parseGeocoding2');
-  print(responseResults);
 
   for (var elem in responseResults) {
-    print('elem = $elem');
     tmp = GeoData.fromJson(elem);
-    print('tmp = $tmp');
     allResults.add(tmp);
   }
   return allResults;
-  // final parsed =
-  //     (jsonDecode(responseResults) as List).cast<Map<String, dynamic>>();
-
-  // return parsed.map<GeoData>((json) => GeoData.fromJson(json)).toList();
 }
 
 Future<List<GeoData>> fetchGeocoding(String value) async {
-  print('Trying to get info from geocoding');
   final response = await http.get(Uri.parse(
       'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=10&language=en&format=json'));
 
   if (response.statusCode == 200) {
     try {
       return parseGeocoding(jsonDecode(response.body));
-      // return GeoData.fromJson(
-      //     jsonDecode(response.body) as Map<String, dynamic>);
     } catch (e) {
-      print('error = $e');
+      // print('error = $e');
       throw Exception('Failed to parse information');
     }
   } else {
