@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -96,8 +98,26 @@ class GeoData {
   });
 
   factory GeoData.fromJson(Map<String, dynamic> json) {
-    print('fromJson: $json');
-    // List results = json.results;
+    // Map<String, dynamic> results = json['results'];
+    print('json: $json');
+    print(json['name']);
+    print(json['latitude']);
+    print(json['longitude']);
+    print(json['country']);
+    print(json['admin1']);
+
+    // List<dynamic> results = json['results'] as List<dynamic>;
+    // Map<String, dynamic> firstResult = results.first;
+
+    // return GeoData(
+    //   id: firstResult["id"] as int,
+    //   city: firstResult["city"] as String,
+    //   latitude: firstResult["latitude"] as String,
+    //   longitude: firstResult["longitude"] as String,
+    //   country: firstResult["country"] as String,
+    //   block: firstResult["block"] as String,
+    // );
+
     return switch (json) {
       {
         'name': String city,
@@ -120,13 +140,41 @@ class GeoData {
   }
 }
 
-Future<GeoData> fetchGeocoding(String value) async {
+List<GeoData> parseGeocoding(dynamic responseBody) {
+  List responseResults = responseBody['results'];
+
+  List<GeoData> allResults = [];
+  GeoData tmp;
+  print('start parseGeocoding2');
+  print(responseResults);
+
+  for (var elem in responseResults) {
+    print('elem = $elem');
+    tmp = GeoData.fromJson(elem);
+    print('tmp = $tmp');
+    allResults.add(tmp);
+  }
+  return allResults;
+  // final parsed =
+  //     (jsonDecode(responseResults) as List).cast<Map<String, dynamic>>();
+
+  // return parsed.map<GeoData>((json) => GeoData.fromJson(json)).toList();
+}
+
+Future<List<GeoData>> fetchGeocoding(String value) async {
   print('Trying to get info from geocoding');
   final response = await http.get(Uri.parse(
       'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=10&language=en&format=json'));
 
   if (response.statusCode == 200) {
-    return GeoData.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    try {
+      return parseGeocoding(jsonDecode(response.body));
+      // return GeoData.fromJson(
+      //     jsonDecode(response.body) as Map<String, dynamic>);
+    } catch (e) {
+      print('error = $e');
+      throw Exception('Failed to parse information');
+    }
   } else {
     throw Exception('Failed to load album');
   }

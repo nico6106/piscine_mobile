@@ -29,7 +29,7 @@ class _MainApp extends State<MainApp> {
   bool _error = false;
   bool _showSearch = false;
 
-  late Future<GeoData> futureGeoData;
+  late Future<List<GeoData>> futureGeoData;
 
   void setCity(String city) {
     setState(() {
@@ -55,7 +55,12 @@ class _MainApp extends State<MainApp> {
           _showSearch = true;
         }
         if (myController.text.length > 2) {
-          futureGeoData = fetchGeocoding(myController.text);
+          try {
+            futureGeoData = fetchGeocoding(myController.text);
+          } catch (e) {
+            print('Error to get futureGeoData from fetchGeocoding');
+          }
+
           print('after geodata');
           print(futureGeoData);
         }
