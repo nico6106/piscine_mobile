@@ -60,7 +60,7 @@ class _MainApp extends State<MainApp> {
           _showSearch = false;
         });
       }
-      if (myController.text.length > 2) {
+      if (myController.text.length > 2 && local == 'oula') {
         try {
           futureGeoData = fetchGeocoding(myController.text);
           if (futureGeoData is Exception) {
@@ -150,7 +150,7 @@ class _MainApp extends State<MainApp> {
                   future: futureGeoData,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return SearchBarResults(data: snapshot.data!);
+                      // return SearchBarResults(data: snapshot.data!);
                     } else if (snapshot.hasError) {
                       // setError();
                       WidgetsBinding.instance.addPostFrameCallback((_) {
