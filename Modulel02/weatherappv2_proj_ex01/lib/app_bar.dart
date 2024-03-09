@@ -1,20 +1,26 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class MyAppBar extends StatelessWidget {
-  const MyAppBar(
-      {super.key,
-      required this.myController,
-      required this.setCity,
-      required this.setChoice,
-      required this.setShowSearch});
+  const MyAppBar({
+    super.key,
+    required this.myController,
+    required this.setCity,
+    required this.setChoice,
+    required this.setShowSearch,
+    required this.setError,
+    required this.setCoord,
+  });
 
   final TextEditingController myController;
   final Function(String) setCity;
   final Function(String) setChoice;
   final Function(bool) setShowSearch;
+  final Function(bool value, String reason) setError;
+  final Function(double p1, double p2) setCoord;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +30,12 @@ class MyAppBar extends StatelessWidget {
         children: [
           Expanded(
             child: SearchBarInputWidget(
-                myController: myController,
-                setCity: setCity,
-                setChoice: setChoice),
+              myController: myController,
+              setCity: setCity,
+              setChoice: setChoice,
+              setError: setError,
+              setCoord: setCoord,
+            ),
           ),
           GestureDetector(
             onTap: () => {setChoice('gps')},
@@ -48,26 +57,15 @@ class SearchBarInputWidget extends StatelessWidget {
     required this.myController,
     required this.setCity,
     required this.setChoice,
+    required this.setError,
+    required this.setCoord,
   });
 
   final TextEditingController myController;
   final Function(String p1) setCity;
   final Function(String p1) setChoice;
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return TextField(
-  //     controller: myController,
-  //     onChanged: (value) {
-  //       setCity(value);
-  //       setChoice('city');
-  //     },
-  //     decoration: const InputDecoration(
-  //         // border: OutlineInputBorder(),
-  //         hintText: 'Localisation',
-  //         prefixIcon: Icon(Icons.search)),
-  //   );
-  // }
+  final Function(bool value, String reason) setError;
+  final Function(double p1, double p2) setCoord;
 
   @override
   Widget build(BuildContext context) {
@@ -92,26 +90,34 @@ class SearchBarInputWidget extends StatelessWidget {
             onFieldSubmitted();
           },
           decoration: const InputDecoration(
-              hintText: 'Localisation', prefixIcon: Icon(Icons.search)),
+              hintText: 'Search location', prefixIcon: Icon(Icons.search)),
         );
       },
       optionsBuilder: (TextEditingValue textEditingValue) async {
         searchingWithQuery = textEditingValue.text;
-        final Iterable<GeoData> futureGeoData =
-            await fetchGeocoding(searchingWithQuery!);
 
-        // If another search happened after this one, throw away these options.
-        // Use the previous options intead and wait for the newer request to
-        // finish.
-        if (searchingWithQuery != textEditingValue.text) {
-          return lastOptions;
+        try {
+          final Iterable<GeoData> futureGeoData =
+              await fetchGeocoding(searchingWithQuery!);
+
+          // If another search happened after this one, throw away these options.
+          // Use the previous options intead and wait for the newer request to
+          // finish.
+          if (searchingWithQuery != textEditingValue.text) {
+            return lastOptions;
+          }
+
+          lastOptions = futureGeoData;
+          return futureGeoData;
+        } catch (e) {
+          setError(true, e.toString());
+          return <GeoData>[];
         }
-
-        lastOptions = futureGeoData;
-        return futureGeoData;
       },
       onSelected: (GeoData selection) {
-        debugPrint('You just selected ${displayStringForOption(selection)}');
+        // debugPrint('You just selected ${displayStringForOption(selection)}');
+        setError(false, '');
+        setCoord(selection.longitude, selection.latitude);
       },
       displayStringForOption: displayStringForOption,
       optionsViewBuilder: (context, onSelected, options) {
@@ -144,50 +150,25 @@ class SearchBarResults extends StatelessWidget {
         final suggestion = data.elementAt(index);
         return ListTile(
           onTap: () => onSelected(suggestion),
-          title: 
-          Row(
-          children: [
-            const Icon(
-              Icons.location_city,
-              semanticLabel: 'City',
-            ),
-            const SizedBox(width: 8), // Espace entre l'icône et le texte
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    suggestion.city,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  if (suggestion.admin1 != null) ...[
-                    Text(suggestion.admin1!),
-                  ],
-                  Text(suggestion.country),
-                ],
+          title: Wrap(
+            children: [
+              const Icon(
+                Icons.location_city,
+                semanticLabel: 'City',
               ),
-            ),
-          ],
-        ),
-
-          // Row(
-          //   children: [
-          //     const Icon(
-          //       Icons.location_city,
-          //       semanticLabel: 'City',
-          //     ),
-          //     Text(
-          //       suggestion.city,
-          //       style: const TextStyle(fontWeight: FontWeight.bold),
-          //     ),
-          //     const Text(', '),
-          //     if (suggestion.admin1 != null) ...[
-          //       Text(suggestion.admin1!),
-          //       const Text(', '),
-          //     ],
-          //     Text(suggestion.country)
-          //   ],
-          // ),
+              const SizedBox(width: 8),
+              Text(
+                suggestion.city,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Text(', '),
+              if (suggestion.admin1 != null) ...[
+                Text(suggestion.admin1!),
+                const Text(', '),
+              ],
+              Text(suggestion.country),
+            ],
+          ),
         );
       },
     );
@@ -224,6 +205,9 @@ class GeoData {
 }
 
 List<GeoData> parseGeocoding(dynamic responseBody) {
+  if (responseBody['results'] == null) {
+    return [];
+  }
   List responseResults = responseBody['results'];
   List<GeoData> allResults = [];
   GeoData tmp;
@@ -239,20 +223,28 @@ Future<List<GeoData>> fetchGeocoding(String value) async {
   if (value.isEmpty) {
     return List<GeoData>.empty();
   }
-  // print('fetchGeocoding value=$value');
 
-  final response = await http.get(Uri.parse(
-      'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=10&language=en&format=json'));
+  // print('fetchGeocoding: value=$value');
 
-  if (response.statusCode == 200) {
-    try {
-      return parseGeocoding(jsonDecode(response.body));
-    } catch (e) {
-      // print('error = $e');
-      return List<GeoData>.empty();
-      // throw Exception('Failed to parse information');
+  try {
+    final response = await http.get(Uri.parse(
+        'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=5&language=en&format=json'));
+
+    if (response.statusCode == 200) {
+      try {
+        return parseGeocoding(jsonDecode(response.body));
+      } catch (e) {
+        // return List<GeoData>.empty();
+        throw Exception('Error parsing datas');
+      }
+    } else {
+      throw Exception('Error with provider');
     }
-  } else {
-    throw Exception('Failed to load album');
+  } catch (e) {
+    if (e is SocketException) {
+      throw Exception('Socket');
+    } else {
+      rethrow;
+    }
   }
 }

@@ -27,6 +27,8 @@ class _MainApp extends State<MainApp> {
   String local = '';
   bool _error = false;
   bool _showSearch = false;
+  double _longitude = 0;
+  double _latitude = 0;
 
   late Future<List<GeoData>> futureGeoData;
 
@@ -42,9 +44,21 @@ class _MainApp extends State<MainApp> {
     });
   }
 
-  void setError() {
+  void setError(bool value, String explain) {
     setState(() {
-      _showSearch = false;
+      _error = value;
+      if (explain != '') {
+        local = explain;
+      }
+      // _showSearch = false;
+    });
+  }
+
+  void setCoord(double longitude, double latitude) {
+    setState(() {
+      _longitude = longitude;
+      _latitude = latitude;
+      local = '$_latitude $_longitude';
     });
   }
 
@@ -105,10 +119,10 @@ class _MainApp extends State<MainApp> {
           desiredAccuracy: LocationAccuracy.high);
       print('position = $position');
       setState(() {
-        var latitude = position.latitude;
-        var longitude = position.longitude;
+        _latitude = position.latitude;
+        _longitude = position.longitude;
 
-        local = '$latitude $longitude';
+        local = '${position.latitude} ${position.longitude}';
         _error = false;
       });
       return position;
@@ -143,6 +157,8 @@ class _MainApp extends State<MainApp> {
               setCity: setCity,
               setChoice: setChoice,
               setShowSearch: setShowSearch,
+              setError: setError,
+              setCoord: setCoord,
             ),
           ),
           body: _showSearch
@@ -153,9 +169,9 @@ class _MainApp extends State<MainApp> {
                       // return SearchBarResults(data: snapshot.data!);
                     } else if (snapshot.hasError) {
                       // setError();
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        setError(); // Modifier l'état en dehors du build
-                      });
+                      // WidgetsBinding.instance.addPostFrameCallback((_) {
+                      //   setError(); // Modifier l'état en dehors du build
+                      // });
 
                       return Text('${snapshot.error}');
                     }
@@ -198,7 +214,7 @@ class MyTabWidget extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         if ((!isError && constraints.minHeight > 40) ||
-            constraints.minHeight > 60) {
+            constraints.minHeight > 80) {
           return ShowResultsWidget(
             title: title,
             localisation: localisation,
