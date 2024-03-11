@@ -8,14 +8,12 @@ class MyAppBar extends StatelessWidget {
   const MyAppBar({
     super.key,
     required this.myController,
-    required this.setCity,
     required this.setChoice,
     required this.setError,
     required this.setCoord,
   });
 
   final TextEditingController myController;
-  final Function(String) setCity;
   final Function(String) setChoice;
   final Function(bool value, String reason) setError;
   final Function(double p1, double p2) setCoord;
@@ -29,7 +27,6 @@ class MyAppBar extends StatelessWidget {
           Expanded(
             child: SearchBarInputWidget(
               myController: myController,
-              setCity: setCity,
               setChoice: setChoice,
               setError: setError,
               setCoord: setCoord,
@@ -53,14 +50,12 @@ class SearchBarInputWidget extends StatelessWidget {
   const SearchBarInputWidget({
     super.key,
     required this.myController,
-    required this.setCity,
     required this.setChoice,
     required this.setError,
     required this.setCoord,
   });
 
   final TextEditingController myController;
-  final Function(String p1) setCity;
   final Function(String p1) setChoice;
   final Function(bool value, String reason) setError;
   final Function(double p1, double p2) setCoord;
@@ -78,6 +73,8 @@ class SearchBarInputWidget extends StatelessWidget {
       }
     }
 
+    final TextEditingController textEditingController = TextEditingController();
+
     return Autocomplete<GeoData>(
       fieldViewBuilder: (BuildContext context, TextEditingController controller,
           FocusNode focusNode, VoidCallback onFieldSubmitted) {
@@ -86,6 +83,7 @@ class SearchBarInputWidget extends StatelessWidget {
           focusNode: focusNode,
           onFieldSubmitted: (String value) {
             onFieldSubmitted();
+            controller.clear();
           },
           decoration: const InputDecoration(
               hintText: 'Search location', prefixIcon: Icon(Icons.search)),
@@ -97,7 +95,6 @@ class SearchBarInputWidget extends StatelessWidget {
         try {
           final Iterable<GeoData> futureGeoData =
               await fetchGeocoding(searchingWithQuery!);
-
           // If another search happened after this one, throw away these options.
           // Use the previous options intead and wait for the newer request to
           // finish.
@@ -113,19 +110,72 @@ class SearchBarInputWidget extends StatelessWidget {
         }
       },
       onSelected: (GeoData selection) {
-        // debugPrint('You just selected ${displayStringForOption(selection)}');
+        debugPrint('You just selected ${displayStringForOption(selection)}');
         setError(false, '');
         setCoord(selection.longitude, selection.latitude);
+        // Clear the text field when a city is selected
+        textEditingController.clear();
       },
       displayStringForOption: displayStringForOption,
-      optionsViewBuilder: (context, onSelected, options) {
-        return Material(
-            child: SearchBarResults(
-          data: options,
-          onSelected: onSelected,
-        ));
-      },
+      // optionsViewBuilder: (context, onSelected, options) {
+      //   return Material(
+      //       child: SearchBarResults(
+      //     data: options,
+      //     onSelected: onSelected,
+      //   ));
+      // },
     );
+
+    // return Autocomplete<GeoData>(
+    //   fieldViewBuilder: (BuildContext context, TextEditingController controller,
+    //       FocusNode focusNode, VoidCallback onFieldSubmitted) {
+    //     return TextFormField(
+    //       controller: controller,
+    //       focusNode: focusNode,
+    //       onFieldSubmitted: (String value) {
+    //         onFieldSubmitted();
+    //         controller.clear();
+    //       },
+    //       decoration: const InputDecoration(
+    //           hintText: 'Search location', prefixIcon: Icon(Icons.search)),
+    //     );
+    //   },
+    //   optionsBuilder: (TextEditingValue textEditingValue) async {
+    //     searchingWithQuery = textEditingValue.text;
+
+    //     try {
+    //       final Iterable<GeoData> futureGeoData =
+    //           await fetchGeocoding(searchingWithQuery!);
+    //       // If another search happened after this one, throw away these options.
+    //       // Use the previous options intead and wait for the newer request to
+    //       // finish.
+    //       if (searchingWithQuery != textEditingValue.text) {
+    //         return lastOptions;
+    //       }
+
+    //       lastOptions = futureGeoData;
+    //       return futureGeoData;
+    //     } catch (e) {
+    //       setError(true, e.toString());
+    //       return <GeoData>[];
+    //     }
+    //   },
+    //   onSelected: (GeoData selection) {
+    //     debugPrint('You just selected ${displayStringForOption(selection)}');
+    //     setError(false, '');
+    //     setCoord(selection.longitude, selection.latitude);
+    //     // Clear the text field when a city is selected
+    //     textEditingController.clear();
+    //   },
+    //   displayStringForOption: displayStringForOption,
+    //   // optionsViewBuilder: (context, onSelected, options) {
+    //   //   return Material(
+    //   //       child: SearchBarResults(
+    //   //     data: options,
+    //   //     onSelected: onSelected,
+    //   //   ));
+    //   // },
+    // );
   }
 }
 
@@ -146,26 +196,28 @@ class SearchBarResults extends StatelessWidget {
       itemBuilder: (context, index) {
         // final suggestion = data[index];
         final suggestion = data.elementAt(index);
-        return ListTile(
-          onTap: () => onSelected(suggestion),
-          title: Wrap(
-            children: [
-              const Icon(
-                Icons.location_city,
-                semanticLabel: 'City',
-              ),
-              const SizedBox(width: 8),
-              Text(
-                suggestion.city,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const Text(', '),
-              if (suggestion.admin1 != null) ...[
-                Text(suggestion.admin1!),
+        return Scrollbar(
+          child: ListTile(
+            onTap: () => onSelected(suggestion),
+            title: Wrap(
+              children: [
+                const Icon(
+                  Icons.location_city,
+                  semanticLabel: 'City',
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  suggestion.city,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 const Text(', '),
+                if (suggestion.admin1 != null) ...[
+                  Text(suggestion.admin1!),
+                  const Text(', '),
+                ],
+                Text(suggestion.country),
               ],
-              Text(suggestion.country),
-            ],
+            ),
           ),
         );
       },
@@ -222,17 +274,14 @@ Future<List<GeoData>> fetchGeocoding(String value) async {
     return List<GeoData>.empty();
   }
 
-  // print('fetchGeocoding: value=$value');
-
   try {
     final response = await http.get(Uri.parse(
-        'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=5&language=en&format=json'));
+        'https://geocoding-api.open-meteo.com/v1/search?name=$value&count=10&language=en&format=json'));
 
     if (response.statusCode == 200) {
       try {
         return parseGeocoding(jsonDecode(response.body));
       } catch (e) {
-        // return List<GeoData>.empty();
         throw Exception('Unknown city');
       }
     } else {

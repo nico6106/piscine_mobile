@@ -7,6 +7,8 @@ import 'app_bar.dart';
 import 'bottom_bar.dart';
 import 'body.dart';
 import 'class_def.dart';
+import 'decode_location.dart';
+import 'get_weather.dart';
 
 void main() {
   runApp(const MainApp());
@@ -23,17 +25,12 @@ class _MainApp extends State<MainApp> {
   final myController = TextEditingController();
   String local = '';
   bool _error = false;
-  // double _longitude = 0;
-  // double _latitude = 0;
   Coord coord = Coord(0, 0);
 
-  late Future<List<GeoData>> futureGeoData;
+  DecodeCity? city;
+  Weather? weather;
 
-  void setCity(String city) {
-    setState(() {
-      local = city;
-    });
-  }
+  late Future<List<GeoData>> futureGeoData;
 
   void setError(bool value, String explain) {
     setState(() {
@@ -41,16 +38,45 @@ class _MainApp extends State<MainApp> {
       if (explain != '') {
         local = explain;
       }
-      // _showSearch = false;
     });
   }
 
+  void updateCity(Coord coordinates) async {
+    // Appel à la fonction qui récupère les informations de la ville
+    try {
+      DecodeCity tmp = await fetchCityFromCoord(coordinates);
+      setState(() {
+        city = tmp;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void updateWeather(Coord coordinates) async {
+    // Appel à la fonction qui récupère les informations météorologiques actuelles
+    try {
+      Weather tmp = await fetchWeather(coordinates);
+      setState(() {
+        weather = tmp;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+        local = 'Error 1';
+      });
+      print(e);
+    }
+  }
+
   void setCoord(double longitude, double latitude) {
+    print('setCoord: long=$longitude, lat=$latitude ');
     setState(() {
-      coord.longitude = longitude;
-      coord.latitude = latitude;
-      local = '$latitude $longitude';
+      coord = Coord(latitude, longitude);
+      // local = '$latitude $longitude';
     });
+    updateCity(coord);
+    updateWeather(coord);
   }
 
   void setChoice(String choice) async {
@@ -58,14 +84,6 @@ class _MainApp extends State<MainApp> {
       setState(() {
         _error = false;
       });
-
-      if (myController.text.length > 2 && local == 'oula') {
-        try {
-          futureGeoData = fetchGeocoding(myController.text);
-        } catch (e) {
-          print('Error to get futureGeoData from fetchGeocoding');
-        }
-      }
     } else if (choice == 'gps') {
       // trying to get localisation
       _getCurrentLocation();
@@ -82,11 +100,9 @@ class _MainApp extends State<MainApp> {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       print('position = $position');
+      setCoord(position.longitude, position.latitude);
       setState(() {
-        coord.latitude = position.latitude;
-        coord.longitude = position.longitude;
-
-        local = '${position.latitude} ${position.longitude}';
+        // local = '${position.latitude} ${position.longitude}';
         _error = false;
       });
       return position;
@@ -96,6 +112,7 @@ class _MainApp extends State<MainApp> {
         local =
             'Geolocation is not available, please enable it in your App settings';
         _error = true;
+        coord = Coord(0, 0);
       });
       return null;
     }
@@ -117,7 +134,6 @@ class _MainApp extends State<MainApp> {
             backgroundColor: Colors.teal,
             title: MyAppBar(
               myController: myController,
-              setCity: setCity,
               setChoice: setChoice,
               setError: setError,
               setCoord: setCoord,
@@ -126,20 +142,29 @@ class _MainApp extends State<MainApp> {
           body: TabBarView(
             children: [
               MyTabWidget(
-                  title: 'Currently',
-                  localisation: local,
-                  isError: _error,
-                  coord: coord),
+                title: 'Currently',
+                localisation: local,
+                isError: _error,
+                coord: coord,
+                city: city,
+                weather: weather,
+              ),
               MyTabWidget(
-                  title: 'Today',
-                  localisation: local,
-                  isError: _error,
-                  coord: coord),
+                title: 'Today',
+                localisation: local,
+                isError: _error,
+                coord: coord,
+                city: city,
+                weather: weather,
+              ),
               MyTabWidget(
-                  title: 'Weekly',
-                  localisation: local,
-                  isError: _error,
-                  coord: coord),
+                title: 'Weekly',
+                localisation: local,
+                isError: _error,
+                coord: coord,
+                city: city,
+                weather: weather,
+              ),
             ],
           ),
           bottomNavigationBar: const MyBottonBarWidget(),
