@@ -141,8 +141,9 @@ class _MainApp extends State<MainApp> {
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
+          // extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: Colors.teal,
+            backgroundColor: const Color.fromARGB(76, 128, 175, 255),
             title: MyAppBar(
               myController: myController,
               setChoice: setChoice,
@@ -150,33 +151,43 @@ class _MainApp extends State<MainApp> {
               setCoord: setCoord,
             ),
           ),
-          body: TabBarView(
-            children: [
-              MyTabWidget(
-                title: 'Currently',
-                localisation: local,
-                isError: _error,
-                coord: coord,
-                city: city,
-                weather: weather,
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("image/background1.png"),
+                fit: BoxFit.cover,
               ),
-              MyTabWidget(
-                title: 'Today',
-                localisation: local,
-                isError: _error,
-                coord: coord,
-                city: city,
-                weather: weather,
-              ),
-              MyTabWidget(
-                title: 'Weekly',
-                localisation: local,
-                isError: _error,
-                coord: coord,
-                city: city,
-                weather: weather,
-              ),
-            ],
+            ),
+            child: TabBarView(
+              children: [
+                MyTabWidget(
+                  title: 'Currently',
+                  localisation: local,
+                  isError: _error,
+                  coord: coord,
+                  city: city,
+                  weather: weather,
+                ),
+                MyTabWidget(
+                  title: 'Today',
+                  localisation: local,
+                  isError: _error,
+                  coord: coord,
+                  city: city,
+                  weather: weather,
+                ),
+                MyTabWidget(
+                  title: 'Weekly',
+                  localisation: local,
+                  isError: _error,
+                  coord: coord,
+                  city: city,
+                  weather: weather,
+                ),
+              ],
+            ),
           ),
           bottomNavigationBar: const MyBottonBarWidget(),
         ),
@@ -184,3 +195,12 @@ class _MainApp extends State<MainApp> {
     );
   }
 }
+
+// Container(
+//                 decoration: const BoxDecoration(
+//                   image: DecorationImage(
+//                     image: AssetImage("image/background1.png"),
+//                     fit: BoxFit.cover,
+//                   ),
+//                 ),
+//               ),

@@ -87,7 +87,7 @@ Future<DecodeCity> fetchCityFromCoord(Coord coord) async {
     }
   } catch (e) {
     if (e is SocketException) {
-      throw Exception('Please check internet connexion');
+      throw Exception('The service connexion is lost, please check your internet connection or try again later');
     } else {
       rethrow;
     }
