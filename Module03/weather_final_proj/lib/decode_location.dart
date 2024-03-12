@@ -43,9 +43,7 @@ class ShowLocationInformationBody extends StatelessWidget {
         ),
         Text(
           country,
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
       ],
     );

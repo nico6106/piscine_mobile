@@ -9,30 +9,35 @@ class MyBottonBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
       child: BottomAppBar(
-        color: Color.fromARGB(76, 128, 175, 255),
-        child: TabBar(tabs: [
-          Tab(
-            icon: Icon(
-              Icons.watch,
-              semanticLabel: 'Currently',
+        color: Color.fromRGBO(34, 26, 101,
+            1), // Colors.transparent, //Color.fromARGB(76, 128, 175, 255),
+        child: TabBar(
+          unselectedLabelColor: Colors.white,
+          labelColor: Colors.amber,
+          tabs: [
+            Tab(
+              icon: Icon(
+                Icons.watch,
+                semanticLabel: 'Currently',
+              ),
+              text: 'Currently',
             ),
-            text: 'Currently',
-          ),
-          Tab(
-            icon: Icon(
-              Icons.today,
-              semanticLabel: 'Today',
+            Tab(
+              icon: Icon(
+                Icons.today,
+                semanticLabel: 'Today',
+              ),
+              text: 'Today',
             ),
-            text: 'Today',
-          ),
-          Tab(
-            icon: Icon(
-              Icons.calendar_month,
-              semanticLabel: 'Weekly',
+            Tab(
+              icon: Icon(
+                Icons.calendar_month,
+                semanticLabel: 'Weekly',
+              ),
+              text: 'Weekly',
             ),
-            text: 'Weekly',
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }

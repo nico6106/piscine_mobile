@@ -141,9 +141,8 @@ class _MainApp extends State<MainApp> {
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
-          // extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: const Color.fromARGB(76, 128, 175, 255),
+            backgroundColor: const Color.fromRGBO(102, 64, 203, 1),
             title: MyAppBar(
               myController: myController,
               setChoice: setChoice,
@@ -156,7 +155,7 @@ class _MainApp extends State<MainApp> {
             width: double.infinity,
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("image/background1.png"),
+                image: AssetImage("image/background5.png"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -195,12 +194,3 @@ class _MainApp extends State<MainApp> {
     );
   }
 }
-
-// Container(
-//                 decoration: const BoxDecoration(
-//                   image: DecorationImage(
-//                     image: AssetImage("image/background1.png"),
-//                     fit: BoxFit.cover,
-//                   ),
-//                 ),
-//               ),

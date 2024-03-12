@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'class_def.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -187,3 +189,40 @@ final Map<int, String> weatherCodes = {
   96: 'Thunderstorm with slight hail',
   99: 'Thunderstorm with heavy hail',
 };
+
+final Map<int, Icon> weatherIcon = {
+  0: const Icon(Icons.wb_sunny_outlined,
+      semanticLabel: 'Sunny', color: Colors.blue),
+  1: const Icon(Icons.cloud_outlined, semanticLabel: 'cloud_outlined', color: Colors.white),
+  2: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  3: const Icon(Icons.cloud_outlined, semanticLabel: 'Overcast', color: Colors.white),
+  45: const Icon(Icons.foggy, semanticLabel: 'foggy', color: Colors.white),
+  48: const Icon(Icons.foggy, semanticLabel: 'foggy', color: Colors.white),
+  51: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  53: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  55: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  56: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  57: const Icon(Icons.cloud, semanticLabel: 'cloud', color: Colors.white),
+  61: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  63: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  65: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  66: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  67: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  71: const Icon(Icons.ac_unit, semanticLabel: 'ac_unit', color: Colors.white),
+  73: const Icon(Icons.ac_unit, semanticLabel: 'ac_unit', color: Colors.white),
+  75: const Icon(Icons.ac_unit, semanticLabel: 'ac_unit', color: Colors.white),
+  77: const Icon(Icons.ac_unit, semanticLabel: 'ac_unit', color: Colors.white),
+  80: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  81: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  82: const Icon(Icons.cloudy_snowing, semanticLabel: 'cloudy_snowing', color: Colors.white),
+  95: const Icon(Icons.thunderstorm, semanticLabel: 'thunderstorm'),
+  96: const Icon(Icons.thunderstorm, semanticLabel: 'thunderstorm'),
+  99: const Icon(Icons.thunderstorm, semanticLabel: 'thunderstorm'),
+};
+
+Icon getWeatherIcon(int code, double size) {
+  final Icon? icon = weatherIcon[code];
+  return icon != null
+      ? Icon(icon.icon, size: size, color: icon.color)
+      : const Icon(Icons.error);
+}
