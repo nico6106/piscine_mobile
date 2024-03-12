@@ -49,7 +49,12 @@ class _MainApp extends State<MainApp> {
         city = tmp;
       });
     } catch (e) {
+      setState(() {
+        _error = true;
+        local = e.toString();
+      });
       print(e);
+      rethrow;
     }
   }
 
@@ -63,20 +68,26 @@ class _MainApp extends State<MainApp> {
     } catch (e) {
       setState(() {
         _error = true;
-        local = 'Error 1';
+        local = e.toString();
       });
       print(e);
+      rethrow;
     }
   }
 
   void setCoord(double longitude, double latitude) {
-    print('setCoord: long=$longitude, lat=$latitude ');
+    // print('setCoord: long=$longitude, lat=$latitude ');
     setState(() {
       coord = Coord(latitude, longitude);
       // local = '$latitude $longitude';
     });
-    updateCity(coord);
-    updateWeather(coord);
+    try {
+      updateCity(coord);
+      updateWeather(coord);
+    } catch (e) {
+      print('setCoord error: $e');
+      // rethrow;
+    }
   }
 
   void setChoice(String choice) async {

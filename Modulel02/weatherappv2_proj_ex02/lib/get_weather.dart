@@ -42,10 +42,17 @@ class TodayWeather {
   factory TodayWeather.fromJson(Map<String, dynamic> json) {
     // print('TodayWeather $json');
     return TodayWeather(
-      time: (json['time'] as List<dynamic>).map((e) => DateTime.fromMillisecondsSinceEpoch(e * 1000)).toList(),
-      temperature: (json['temperature_2m'] as List<dynamic>).map((e) => e as double).toList(),
-      weatherCode: (json['weather_code'] as List<dynamic>).map((e) => e as int).toList(),
-      windSpeed10m: (json['wind_speed_10m'] as List<dynamic>).map((e) => e as double).toList(),
+      time: (json['time'] as List<dynamic>)
+          .map((e) => DateTime.fromMillisecondsSinceEpoch(e * 1000))
+          .toList(),
+      temperature: (json['temperature_2m'] as List<dynamic>)
+          .map((e) => e as double)
+          .toList(),
+      weatherCode:
+          (json['weather_code'] as List<dynamic>).map((e) => e as int).toList(),
+      windSpeed10m: (json['wind_speed_10m'] as List<dynamic>)
+          .map((e) => e as double)
+          .toList(),
     );
   }
 }
@@ -67,11 +74,20 @@ class WeeklyWeather {
 
   factory WeeklyWeather.fromJson(Map<String, dynamic> json) {
     return WeeklyWeather(
-      time: (json['time'] as List<dynamic>).map((e) => DateTime.fromMillisecondsSinceEpoch(e * 1000)).toList(),
-      tempMax: (json['temperature_2m_max'] as List<dynamic>).map((e) => e as double).toList(),
-      tempMin: (json['temperature_2m_min'] as List<dynamic>).map((e) => e as double).toList(),
-      weatherCode: (json['weather_code'] as List<dynamic>).map((e) => e as int).toList(),
-      precipitationSum: (json['precipitation_sum'] as List<dynamic>).map((e) => e as double).toList(),
+      time: (json['time'] as List<dynamic>)
+          .map((e) => DateTime.fromMillisecondsSinceEpoch(e * 1000))
+          .toList(),
+      tempMax: (json['temperature_2m_max'] as List<dynamic>)
+          .map((e) => e as double)
+          .toList(),
+      tempMin: (json['temperature_2m_min'] as List<dynamic>)
+          .map((e) => e as double)
+          .toList(),
+      weatherCode:
+          (json['weather_code'] as List<dynamic>).map((e) => e as int).toList(),
+      precipitationSum: (json['precipitation_sum'] as List<dynamic>)
+          .map((e) => e as double)
+          .toList(),
     );
   }
 }
@@ -117,7 +133,7 @@ class Weather {
 }
 
 Future<Weather> fetchWeather(Coord coord) async {
-  print('fetchCurrentWeather: coord=${coord.latitude}, ${coord.longitude}');
+  // print('fetchCurrentWeather: coord=${coord.latitude}, ${coord.longitude}');
   try {
     final response = await http.get(Uri.parse(
         'https://api.open-meteo.com/v1/forecast?latitude=${coord.latitude}&longitude=${coord.longitude}&current=temperature_2m,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timeformat=unixtime&timezone=Europe%2FBerlin'));
@@ -136,7 +152,7 @@ Future<Weather> fetchWeather(Coord coord) async {
     }
   } catch (e) {
     if (e is SocketException) {
-      throw Exception('Please check internet connexion');
+      throw ('The service connexion is lost, please check your internet connection or try again later');
     } else {
       rethrow;
     }

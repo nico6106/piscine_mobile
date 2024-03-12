@@ -49,7 +49,7 @@ class DecodeCity {
 
   factory DecodeCity.fromJson(Map<String, dynamic> json) {
     if (json['address'] == null) {
-      throw Exception('Unknown city 1');
+      throw Exception('Unknown city');
     }
     json = json['address'];
     // print('having json');
@@ -66,14 +66,14 @@ class DecodeCity {
 }
 
 Future<DecodeCity> fetchCityFromCoord(Coord coord) async {
-  print('fetchCityFromCoord: coord=${coord.latitude}, ${coord.longitude}');
+  // print('fetchCityFromCoord: coord=${coord.latitude}, ${coord.longitude}');
   try {
     final response = await http.get(Uri.parse(
         'https://nominatim.openstreetmap.org/reverse?lat=${coord.latitude}&lon=${coord.longitude}&format=json'));
 
     if (response.statusCode == 200) {
       try {
-        print(response.body);
+        // print(response.body);
         return DecodeCity.fromJson(jsonDecode(response.body));
       } catch (e) {
         // print('error fetchCityFromCoord: coord(long=${coord.longitude}, lat=${coord.latitude})');

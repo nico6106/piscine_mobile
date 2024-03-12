@@ -17,7 +17,7 @@ class CurrentBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('CurrentBody');
+    // print('CurrentBody');
     if (coord.latitude == 0) {
       return const Text('Please select a location');
     }
