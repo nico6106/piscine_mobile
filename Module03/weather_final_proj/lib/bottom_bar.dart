@@ -9,8 +9,8 @@ class MyBottonBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SingleChildScrollView(
       child: BottomAppBar(
-        color: Color.fromRGBO(34, 26, 101,
-            1), // Colors.transparent, //Color.fromARGB(76, 128, 175, 255),
+        color: Color.fromRGBO(34, 26, 101, 1),
+        // color: Colors.transparent,
         child: TabBar(
           unselectedLabelColor: Colors.white,
           labelColor: Colors.amber,
