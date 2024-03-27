@@ -110,7 +110,7 @@ class _MainApp extends State<MainApp> {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      print('position = $position');
+      // print('position = $position');
       setCoord(position.longitude, position.latitude);
       setState(() {
         // local = '${position.latitude} ${position.longitude}';
@@ -118,7 +118,7 @@ class _MainApp extends State<MainApp> {
       });
       return position;
     } catch (e) {
-      print('Error getting current location: $e');
+      // print('Error getting current location: $e');
       setState(() {
         local =
             'Geolocation is not available, please enable it in your App settings';
