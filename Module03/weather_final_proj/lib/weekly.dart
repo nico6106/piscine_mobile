@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'class_def.dart';
 import 'decode_location.dart';
 import 'get_weather.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'dart:math';
+import 'package:intl/intl.dart';
+// import 'package:fl_chart_app/presentation/widgets/legend_widget.dart';
 
 class WeeklyBody extends StatelessWidget {
   const WeeklyBody({
@@ -18,6 +22,7 @@ class WeeklyBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('WeeklyBody');
+    final screenHeight = MediaQuery.of(context).size.height;
     if (coord.latitude == 0) {
       return const Text('Please select a location');
     }
@@ -29,34 +34,205 @@ class WeeklyBody extends StatelessWidget {
           ] else
             const Text('No location data'),
           if (weather != null) ...[
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 7,
-              itemBuilder: (context, index) {
-                return Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 20,
+            SizedBox(height: screenHeight * 0.02),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white.withOpacity(0.2),
+                ),
+                child: Column(
                   children: [
-                    const SizedBox(
-                      width: 0,
+                    const Text(
+                      'Weekly temperatures',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    Text(
-                        '${weather!.weekly!.time![index].year.toString()}-${weather!.weekly!.time![index].month.toString()}-${weather!.weekly!.time![index].day.toString()}'),
-                    Text('${weather!.weekly!.tempMin![index].toString()}°C'),
-                    Text('${weather!.weekly!.tempMax![index].toString()}°C'),
-                    DescribeWeather(
-                        weatherCode: weather!.weekly!.weatherCode![index]),
+                    SizedBox(
+                      height:
+                          screenHeight * 0.35 > 200 ? screenHeight * 0.35 : 200,
+                      // aspectRatio: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            right: 8, left: 5, top: 8, bottom: 0),
+                        child: LineChart(mainData()),
+                      ),
+                    ),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('— min', style: TextStyle(color: Colors.blue)),
+                        Text('    '),
+                        Text('— max', style: TextStyle(color: Colors.red))
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.01),
                   ],
-                );
-              },
-            )
+                ),
+              ),
+            ),
+
+            SizedBox(height: screenHeight * 0.01),
+            // scroll infos
+            Container(
+              height: screenHeight * 0.20 > 110 ? screenHeight * 0.20 : 110,
+              width: double.infinity,
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.white.withOpacity(0.2),
+              ),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  for (int i = 0; i < 7; i++) ...[
+                    OneDayWeatherElemWidget(weather: weather, i: i),
+                    const SizedBox(width: 10),
+                  ]
+                ],
+              ),
+            ),
+
+            // ListView.builder(
+            //   shrinkWrap: true,
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   itemCount: 7,
+            //   itemBuilder: (context, index) {
+            //     return Wrap(
+            //       direction: Axis.horizontal,
+            //       spacing: 20,
+            //       children: [
+            //         const SizedBox(
+            //           width: 0,
+            //         ),
+            //         Text(
+            //             '${weather!.weekly!.time![index].year.toString()}-${weather!.weekly!.time![index].month.toString()}-${weather!.weekly!.time![index].day.toString()}'),
+            //         Text('${weather!.weekly!.tempMin![index].toString()}°C'),
+            //         Text('${weather!.weekly!.tempMax![index].toString()}°C'),
+            //         DescribeWeather(
+            //             weatherCode: weather!.weekly!.weatherCode![index]),
+            //       ],
+            //     );
+            //   },
+            // )
             // Text('${weather!.current!.windSpeed10m.toString()} km/h'),
           ] else
             const Text('No weather data'),
+          const SizedBox(height: 100),
         ],
       ),
     );
+  }
+
+  LineChartData mainData() {
+    double minXA = weather!.weekly!.tempMin!.reduce(min);
+    double maxXA = weather!.weekly!.tempMin!.reduce(max);
+    double minXB = weather!.weekly!.tempMax!.reduce(min);
+    double maxXB = weather!.weekly!.tempMax!.reduce(max);
+
+    double minY = (min(minXA, minXB) - 2.0).ceilToDouble();
+    double maxY = (max(maxXA, maxXB) + 2.0).ceilToDouble();
+    return LineChartData(
+      gridData: FlGridData(
+        show: true,
+        drawVerticalLine: true,
+        // horizontalInterval: 3,
+        getDrawingHorizontalLine: (value) {
+          return const FlLine(
+            color: Colors.blueGrey,
+            strokeWidth: 1,
+          );
+        },
+        getDrawingVerticalLine: (value) {
+          return const FlLine(
+            color: Colors.blueGrey,
+            strokeWidth: 1,
+          );
+        },
+      ),
+      titlesData: FlTitlesData(
+        show: true,
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        topTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 25,
+            interval: 1,
+            getTitlesWidget: bottomTitleWidgets,
+          ),
+        ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: leftTitleWidgets,
+            reservedSize: 34,
+          ),
+        ),
+      ),
+      // minX: 0,
+      // maxX: 6,
+      minY: minY,
+      maxY: maxY,
+      lineBarsData: [
+        LineChartBarData(
+          spots: [
+            for (int i = 0; i < 7; i++) ...[
+              FlSpot(i.toDouble(), weather!.weekly!.tempMin![i]),
+            ]
+          ],
+          color: Colors.blue,
+        ),
+        LineChartBarData(
+          spots: [
+            for (int i = 0; i < 7; i++) ...[
+              FlSpot(i.toDouble(), weather!.weekly!.tempMax![i]),
+            ]
+          ],
+          color: Colors.red,
+        )
+      ],
+    );
+  }
+
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      // fontWeight: FontWeight.bold,
+      fontSize: 12,
+    );
+    String text = "${value.toInt().toString()}°C";
+    return Text(text, style: style, textAlign: TextAlign.left);
+  }
+
+  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+    const style = TextStyle(
+      // fontWeight: FontWeight.bold,
+      fontSize: 12,
+    );
+
+    if (weather != null &&
+        weather!.weekly != null &&
+        weather!.weekly!.time != null) {
+      int index = value.toInt();
+      if (index >= 0 && index < weather!.weekly!.time!.length) {
+        DateTime date = weather!.weekly!.time![index];
+        String formattedDate = DateFormat('dd/MM').format(date);
+        return Text(
+          formattedDate,
+          style: style,
+          textAlign: TextAlign.center,
+        );
+      }
+    }
+    return const Text('');
+
+    // print('bottom=$value');
+    // String text = "${value.toInt().toString()}";
+    // return Text(text, style: style, textAlign: TextAlign.left);
   }
 }
 
@@ -76,6 +252,71 @@ class DescribeWeather extends StatelessWidget {
       return const Text('Unknown');
     }
     // return Text('$} ');
+  }
+}
+
+class OneDayWeatherElemWidget extends StatelessWidget {
+  const OneDayWeatherElemWidget({
+    super.key,
+    required this.weather,
+    required this.i,
+  });
+
+  final Weather? weather;
+  final int i;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    String formattedDate =
+        DateFormat('dd/MM').format(weather!.weekly!.time![i]);
+
+    return Column(
+      children: [
+        Text(
+          formattedDate,
+          style: const TextStyle(
+            color: Colors.white,
+            // fontSize: 25,
+          ),
+        ),
+        SizedBox(height: screenHeight * 0.02),
+        // Text(weatherCodes[weather!.current!.weatherCode]!,
+        //     style: const TextStyle(color: Colors.white)),
+        // weatherIcon[weather!.current!.weatherCode]!,
+        getWeatherIcon(weather!.weekly!.weatherCode![i], screenHeight * 0.05),
+        SizedBox(height: screenHeight * 0.01),
+        Text(
+          '${weather!.weekly!.tempMax![i].toString()}°C max',
+          style: const TextStyle(
+            color: Colors.red,
+            // fontSize: 25,
+          ),
+        ),
+        SizedBox(height: screenHeight * 0.01),
+        Text(
+          '${weather!.weekly!.tempMin![i].toString()}°C min',
+          style: const TextStyle(
+            color: Colors.blue,
+            // fontSize: 25,
+          ),
+        ),
+
+        // SizedBox(height: screenHeight * 0.02),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     Icon(
+        //       Icons.air,
+        //       color: Colors.blue,
+        //       size: screenHeight * 0.02,
+        //     ),
+        //     Text(' ${weather!.today!.windSpeed10m![i].toString()} km/h',
+        //         style: const TextStyle(color: Colors.white)),
+        //   ],
+        // ),
+      ],
+    );
   }
 }
 
