@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'class_def.dart';
 import 'decode_location.dart';
 import 'get_weather.dart';
@@ -91,6 +90,7 @@ class TodayBody extends StatelessWidget {
             )
           ] else
             const Text('No weather data'),
+          const SizedBox(height: 100),
         ],
       ),
     );

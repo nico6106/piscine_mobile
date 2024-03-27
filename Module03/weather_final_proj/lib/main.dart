@@ -141,7 +141,7 @@ class _MainApp extends State<MainApp> {
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
-          // extendBody: true,
+          extendBody: true, //false
           appBar: AppBar(
             backgroundColor: const Color.fromRGBO(102, 64, 203, 1),
             title: MyAppBar(
