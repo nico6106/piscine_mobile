@@ -64,6 +64,7 @@ class CurrentBody extends StatelessWidget {
             // SizedBox(height: screenHeight * 0.2),
           ] else
             const Text('No weather data'),
+          const SizedBox(height: 100),
         ],
       ),
     );
