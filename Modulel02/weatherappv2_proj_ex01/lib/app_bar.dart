@@ -206,6 +206,7 @@ class GeoData {
 
 List<GeoData> parseGeocoding(dynamic responseBody) {
   if (responseBody['results'] == null) {
+    // throw 'Could not find any results for the supplied address';
     return [];
   }
   List responseResults = responseBody['results'];
@@ -220,7 +221,7 @@ List<GeoData> parseGeocoding(dynamic responseBody) {
 }
 
 Future<List<GeoData>> fetchGeocoding(String value) async {
-  if (value.isEmpty) {
+  if (value.isEmpty || value.length < 2) {
     return List<GeoData>.empty();
   }
 
@@ -235,7 +236,8 @@ Future<List<GeoData>> fetchGeocoding(String value) async {
         return parseGeocoding(jsonDecode(response.body));
       } catch (e) {
         // return List<GeoData>.empty();
-        throw Exception('Error parsing datas');
+        return List<GeoData>.empty();
+        // throw Exception('Error parsing datas');
       }
     } else {
       throw Exception('Error with provider');
