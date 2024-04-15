@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "94041003599",
+    "project_id": "diaryapp-d7200",
+    "storage_bucket": "diaryapp-d7200.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94041003599:android:d2b4cbe1404a562f687c3a",
+        "android_client_info": {
+          "package_name": "com.example.diaryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "94041003599-kk4s3579ie529utgc4d8m32lujppmbbu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyOo1g3FtsYIioHKe12OLQUMMBExurvyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "94041003599-kk4s3579ie529utgc4d8m32lujppmbbu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "94041003599-vqm0cm43nhdgenpo3bba3l8bcoqv63l6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.diaryapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

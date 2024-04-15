@@ -4,11 +4,14 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
+  sdk: '>=3.3.3 <4.0.0'
 
 dependencies:
+  firebase_auth: ^4.19.1
+  firebase_core: ^2.29.0
   flutter:
     sdk: flutter
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +20,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/background.png
