@@ -29,6 +29,7 @@ class WeeklyBody extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
+          SizedBox(height: screenHeight * 0.1),
           if (city != null) ...[
             ShowLocationInformationBody(city: city!),
           ] else

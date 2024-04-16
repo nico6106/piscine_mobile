@@ -142,8 +142,10 @@ class _MainApp extends State<MainApp> {
         length: 3,
         child: Scaffold(
           extendBody: true, //false
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: const Color.fromRGBO(102, 64, 203, 1),
+            // backgroundColor: const Color.fromRGBO(102, 64, 203, 1),
+            backgroundColor: Colors.transparent,
             title: MyAppBar(
               myController: myController,
               setChoice: setChoice,

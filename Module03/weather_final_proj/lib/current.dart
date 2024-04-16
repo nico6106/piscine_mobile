@@ -28,7 +28,8 @@ class CurrentBody extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          SizedBox(height: screenHeight * 0.05),
+          SizedBox(height: screenHeight * 0.15),
+          // SizedBox(height: screenHeight * 0.05),
           if (city != null) ...[
             ShowLocationInformationBody(city: city!),
           ] else
